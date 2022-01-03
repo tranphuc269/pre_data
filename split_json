@@ -1,0 +1,34 @@
+$ echo '[{"key1":"value1"},{"key2":"value2"},{"key3":"value3"},{"key4":"value4"},{"key5":"value5"}]' | \
+xidel -s - --xquery '
+  for $x in 1 to count($json())
+  where $x mod 2 = 1
+  return
+  [
+    $json($x),
+    $json($x+1)
+  ]
+' --printed-json-format=compact
+[{"key1": "value1"}, {"key2": "value2"}]
+[{"key3": "value3"}, {"key4": "value4"}]
+[{"key5": "value5"}]
+
+`$ echo '[{"key1":"value1"},{"key2":"value2"},{"key3":"value3"},{"key4":"value4"},{"key5":"value5"}]' | \
+xidel -s - --xquery '
+  for $x at $i in 1 to count($json())
+  where $x mod 2 = 1
+  count $i
+  return
+  file:write(
+    concat(
+      "output_",
+      $i,
+      ".json"
+    ),
+    serialize-json(
+      [
+        $json($x),
+        $json($x+1)
+      ]
+    )
+  )
+'
